@@ -1,0 +1,74 @@
+﻿@model IEnumerable<BigSchool.Models.Course>
+@{
+    ViewBag.Title = "Home Page";
+}
+
+<ul class="course">
+    @foreach (var course in Model)
+    {
+        <li>
+            <div class="date">
+                <div class="month">
+                    @course.DateTime.ToString("MM")
+                </div>
+                <div class="day">
+                    @course.DateTime.ToString("dd")
+                </div>
+            </div>
+            <div class="details">
+                <span class="lecturer">
+                    @course.Lecturer.Name
+                </span>
+                <span class="category">
+                    @course.Category.Name
+                </span>
+                <button data-coures-id="@course.Id" class="btn btn-default btn-sm js-toggle-attendance">Going?</button>
+            </div>
+        </li>
+    }
+</ul>
+<style>
+    .course {
+        list-style: none;
+        margin-top: 30px;
+    }
+
+        .course li {
+            position: relative;
+            margin-bottom: 30px;
+        }
+
+        .course > li .date {
+            text-align: center;
+            background-color: #d41d50;
+            color: white;
+            width: 60px;
+            border-radius: 8px;
+        }
+
+        .course > li .details {
+            position: absolute;
+            top: 0;
+            left: 70px;
+        }
+</style>
+@section scripts
+{
+    <script>
+        $(document).ready(function () {
+            $(".js-toggle-attendance").click(function (e) {
+                var button = $(e.target);
+                $.post("/api/attendances", { courseId: button.attr("data-course-id") })
+                    .done(function () {
+                        button
+                            .removeClass("btn-default")
+                            .addClass("btn-info")
+                            .text("Going");
+                    })
+                    .fail(function () {
+                        alert("Something failed!");
+                    });
+            });
+        });
+    </script>
+}
